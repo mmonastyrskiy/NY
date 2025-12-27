@@ -10,6 +10,8 @@ let gameStats = {
     hintsUsed: 0,
     skipped: 0
 };
+let isFullscreen = false;
+let fullscreenContainer = null;
 
 // DOM элементы
 const charactersContainer = document.getElementById('charactersContainer');
@@ -30,6 +32,7 @@ const skipCharacterBtn = document.getElementById('skipCharacter');
 const filterAllBtn = document.getElementById('filterAll');
 const filterGuessedBtn = document.getElementById('filterGuessed');
 const filterUnguessedBtn = document.getElementById('filterUnguessed');
+const fullscreenToggleBtn = document.getElementById('fullscreenToggle');
 
 // Элементы статистики и информации
 const totalCharactersElement = document.getElementById('totalCharacters');
@@ -83,8 +86,99 @@ function createSnowflakes(count) {
     }
 }
 
+
+// После функции setupEventListeners
+function initializeFullscreen() {
+    // Создаем контейнер для полноэкранного режима
+    fullscreenContainer = document.createElement('div');
+    fullscreenContainer.className = 'image-fullscreen hidden';
+    fullscreenContainer.innerHTML = `
+        <div class="fullscreen-close" title="Закрыть (Esc или клик)">
+            <i class="fas fa-times"></i>
+        </div>
+        <img id="fullscreenImage" src="" alt="Полноэкранное изображение">
+        <div class="image-info" id="fullscreenInfo">
+            <h3 id="fullscreenTitle">Заголовок</h3>
+            <p id="fullscreenCategory">Категория</p>
+            <p id="fullscreenDescription">Описание</p>
+        </div>
+    `;
+    
+    document.body.appendChild(fullscreenContainer);
+    
+    // Обработчики для закрытия
+    const closeBtn = fullscreenContainer.querySelector('.fullscreen-close');
+    closeBtn.addEventListener('click', toggleFullscreen);
+    
+    fullscreenContainer.addEventListener('click', function(e) {
+        if (e.target === this) {
+            toggleFullscreen();
+        }
+    });
+    
+    // Обработчик клавиши Esc
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isFullscreen) {
+            toggleFullscreen();
+        }
+    });
+}
+
+function toggleFullscreen() {
+    if (currentCharacterIndex < 0) return;
+    
+    const character = characters[currentCharacterIndex];
+    
+    if (!isFullscreen) {
+        // Открываем полноэкранный режим
+        const imageUrl = character.guessed ? 
+            `/api/images/original/${character.filename}` :
+            `/api/images/preview/${character.filename}`;
+        
+        const fullscreenImage = document.getElementById('fullscreenImage');
+        const fullscreenTitle = document.getElementById('fullscreenTitle');
+        const fullscreenCategory = document.getElementById('fullscreenCategory');
+        const fullscreenDescription = document.getElementById('fullscreenDescription');
+        
+        fullscreenImage.src = imageUrl;
+        fullscreenImage.alt = character.title;
+        
+        fullscreenTitle.textContent = character.guessed ? character.title : 'Скрытый персонаж';
+        fullscreenCategory.textContent = `Категория: ${character.category || 'Общее'}`;
+        
+        if (character.guessed && character.description) {
+            fullscreenDescription.textContent = character.description;
+            fullscreenDescription.style.display = 'block';
+        } else {
+            fullscreenDescription.style.display = 'none';
+        }
+        
+        fullscreenContainer.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Блокируем скролл
+        
+        // Обновляем текст кнопки
+        if (fullscreenToggleBtn) {
+            fullscreenToggleBtn.innerHTML = '<i class="fas fa-compress"></i> Свернуть (Пробел)';
+        }
+        
+        isFullscreen = true;
+    } else {
+        // Закрываем полноэкранный режим
+        fullscreenContainer.classList.add('hidden');
+        document.body.style.overflow = ''; // Восстанавливаем скролл
+        
+        // Обновляем текст кнопки
+        if (fullscreenToggleBtn) {
+            fullscreenToggleBtn.innerHTML = '<i class="fas fa-expand"></i> Полный экран (Пробел)';
+        }
+        
+        isFullscreen = false;
+    }
+}
 // Настройка обработчиков событий
 function setupEventListeners() {
+
+
     // Основные кнопки
     if (loadCharactersBtn) {
         loadCharactersBtn.addEventListener('click', loadCharacters);
@@ -148,6 +242,25 @@ function setupEventListeners() {
             }
         });
     }
+    // Кнопка полноэкранного режима
+    if (fullscreenToggleBtn) {
+        fullscreenToggleBtn.addEventListener('click', toggleFullscreen);
+    }
+    
+    // Обработчик клавиши Пробел
+    document.addEventListener('keydown', function(e) {
+        // Проверяем, что не в поле ввода
+        const isInputFocused = document.activeElement.tagName === 'INPUT' || 
+                              document.activeElement.tagName === 'TEXTAREA';
+        
+        if (e.key === ' ' && !isInputFocused && currentCharacterIndex >= 0) {
+            e.preventDefault(); // Предотвращаем прокрутку страницы
+            toggleFullscreen();
+        }
+    });
+    
+    // Инициализируем полноэкранный режим после загрузки DOM
+    setTimeout(initializeFullscreen, 100);
 }
 
 // Загрузка персонажей с сервера
@@ -504,6 +617,16 @@ function loadCurrentCharacter() {
         if (hintCount >= 5) difficulty = 'Легкая';
         imageDifficultyElement.textContent = difficulty;
     }
+    // Обновляем состояние кнопки полноэкранного режима
+    if (fullscreenToggleBtn) {
+        fullscreenToggleBtn.disabled = false;
+        
+        if (isFullscreen) {
+            fullscreenToggleBtn.innerHTML = '<i class="fas fa-compress"></i> Свернуть (Пробел)';
+        } else {
+            fullscreenToggleBtn.innerHTML = '<i class="fas fa-expand"></i> Полный экран (Пробел)';
+        }
+    }
     
     if (imageDescriptionElement) {
         if (character.guessed && character.description) {
@@ -578,6 +701,12 @@ function clearCurrentCharacter() {
     
     if (requestHintBtn) {
         requestHintBtn.disabled = true;
+    }
+     if (fullscreenToggleBtn) {
+        fullscreenToggleBtn.disabled = true;
+    }
+        if (isFullscreen) {
+        toggleFullscreen();
     }
     
     usedHints = [];

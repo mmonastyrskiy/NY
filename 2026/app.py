@@ -19,7 +19,7 @@ IMAGES_FOLDER = 'images'
 ORIGINAL_FOLDER = os.path.join(IMAGES_FOLDER, 'original')
 PREVIEW_FOLDER = os.path.join(IMAGES_FOLDER, 'preview')
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'mp3', 'jpg', 'jpeg', 'png', 'gif', 'webp'}
+ALLOWED_EXTENSIONS = {'mp3', 'jpg', 'jpeg', 'png', 'gif', 'webp',"jfif"}
 LOTTERY_FILE = os.path.join(UPLOAD_FOLDER, 'lottery.json')
 
 # Создаем папки если их нет
@@ -410,7 +410,7 @@ def find_image_file(folder, filename):
     name_without_ext = os.path.splitext(filename)[0]
     
     # Ищем все изображения в папке
-    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp']
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp',".jfif"]
     
     for ext in image_extensions:
         test_path = os.path.join(folder, name_without_ext + ext)
@@ -573,7 +573,7 @@ def scan_images_folder():
     images = []
     
     # Ищем все файлы в папке original
-    image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.webp']
+    image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.webp',"*.jfif"]
     original_files = []
     
     for ext in image_extensions:
@@ -916,4 +916,4 @@ if __name__ == '__main__':
     print("Сервер доступен по адресу: http://localhost:5000")
     print("=" * 60)
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='127.0.0.1', port=5000)
