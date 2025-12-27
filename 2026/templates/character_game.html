@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отгадай персонажа по иллюстрации - Новогодние конкурсы</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/character_game.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Снежинки -->
+    <div class="snowflakes"></div>
+    
+    <!-- Новогодние украшения -->
+    <div class="decoration decoration-1"></div>
+    <div class="decoration decoration-2"></div>
+    
+    <!-- Кнопка возврата на главную -->
+    <div class="back-to-main">
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i> К выбору конкурса
+        </a>
+    </div>
+    
+    <!-- Основной контейнер -->
+    <div class="container">
+        <!-- Заголовок -->
+        <header class="header">
+            <h1>
+                <i class="fas fa-user-secret"></i>
+                <span class="horse-icon">🐎</span>
+                Отгадай персонажа по иллюстрации
+                <span class="horse-icon">🐎</span>
+                <i class="fas fa-user-secret"></i>
+            </h1>
+            <p id="subtitle">Проверьте свою эрудицию! Угадайте персонажей из фильмов, мультфильмов и книг по иллюстрациям.</p>
+            <div class="game-instruction">
+                <p><i class="fas fa-info-circle"></i> Угадайте персонажа по превью-изображению. После правильного ответа увидите оригинал!</p>
+            </div>
+        </header>
+        
+        <!-- Текущее изображение -->
+        <section class="current-image-section">
+            <h3><i class="fas fa-image"></i> Угадайте персонажа</h3>
+            <div class="image-container">
+                <div class="image-wrapper" id="imageWrapper">
+                    <img id="currentImage" src="" alt="Персонаж для угадывания">
+                    <div class="image-status" id="imageStatus">
+                        <span class="status-preview" id="statusPreview">ПРЕВЬЮ</span>
+                        <span class="status-original hidden" id="statusOriginal">ОРИГИНАЛ</span>
+                    </div>
+                </div>
+                <div class="image-info">
+                    <div class="info-item">
+                        <span class="label">Категория:</span>
+                        <span class="value" id="imageCategory">Неизвестно</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Сложность:</span>
+                        <span class="value" id="imageDifficulty">Средняя</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Прогресс:</span>
+                        <span class="value" id="gameProgress">0/0</span>
+                    </div>
+                </div>
+                <div class="image-description" id="imageDescription">
+                    <p>Загрузите изображения, чтобы начать игру</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Управление и подсказки -->
+        <section class="control-section">
+            <div class="hints-panel">
+                <h3><i class="fas fa-lightbulb"></i> Подсказки</h3>
+                <div class="hints-list" id="hintsList">
+                    <p>Подсказки появятся после загрузки изображения</p>
+                </div>
+                <button class="btn btn-hint" id="requestHint">
+                    <i class="fas fa-question-circle"></i> Новая подсказка
+                </button>
+            </div>
+            
+            <div class="guess-panel">
+                <h3><i class="fas fa-keyboard"></i> Ваш ответ</h3>
+                <div class="guess-input-container">
+                    <input type="text" id="guessInput" placeholder="Введите имя персонажа...">
+                    <button class="btn btn-guess" id="submitGuess">
+                        <i class="fas fa-check"></i> Проверить
+                    </button>
+                </div>
+                <div class="guess-result" id="guessResult">
+                    <p>Введите имя персонажа и нажмите "Проверить"</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Управление игрой -->
+        <section class="game-controls">
+            <h3><i class="fas fa-cogs"></i> Управление игрой</h3>
+            <div class="controls-grid">
+                <button class="control-btn" id="revealCharacter">
+                    <i class="fas fa-eye"></i> Показать персонажа
+                </button>
+                <button class="control-btn" id="nextCharacter">
+                    <i class="fas fa-forward"></i> Следующий
+                </button>
+                <button class="control-btn" id="randomCharacter">
+                    <i class="fas fa-random"></i> Случайный
+                </button>
+                <button class="control-btn" id="skipCharacter">
+                    <i class="fas fa-step-forward"></i> Пропустить
+                </button>
+            </div>
+        </section>
+        
+        <!-- Список персонажей -->
+        <section class="characters-list">
+            <div class="list-header">
+                <h3><i class="fas fa-list-ol"></i> Персонажи для угадывания</h3>
+                <div class="list-controls">
+                    <button class="btn btn-small" id="filterAll">
+                        Все
+                    </button>
+                    <button class="btn btn-small" id="filterGuessed">
+                        Угаданные
+                    </button>
+                    <button class="btn btn-small" id="filterUnguessed">
+                        Неугаданные
+                    </button>
+                    <button class="btn btn-small" id="rescanImages">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat">
+                    <i class="fas fa-users"></i>
+                    <span>Всего: <span id="totalCharacters">0</span></span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Угадано: <span id="guessedCharacters">0</span></span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Осталось: <span id="remainingCharacters">0</span></span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-trophy"></i>
+                    <span>Рекорд: <span id="bestStreak">0</span></span>
+                </div>
+            </div>
+            
+            <div id="charactersContainer">
+                <div class="empty-message">
+                    <i class="fas fa-user-friends"></i>
+                    <p>Нажмите "Загрузить персонажей", чтобы начать игру</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Панель управления -->
+        <div class="control-panel">
+            <button class="control-btn btn-load" id="loadCharacters">
+                <i class="fas fa-folder-open"></i> Загрузить персонажей
+            </button>
+            <button class="control-btn btn-reveal" id="revealAll">
+                <i class="fas fa-eye"></i> Показать всех
+            </button>
+            <button class="control-btn btn-reset" id="resetGame">
+                <i class="fas fa-redo"></i> Начать заново
+            </button>
+        </div>
+        
+        <!-- Футер -->
+        <footer class="footer">
+            <p>© 2026 Конкурс "Отгадай персонажа" - Новогодние конкурсы. Удачи в игре!</p>
+            <p>Добавьте изображения в папки <code>images/original/</code> и <code>images/preview/</code> для добавления новых персонажей</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/character_game.js') }}"></script>
+</body>
+</html>

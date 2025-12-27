@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Колесо Фортуны - Новогодние конкурсы</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fortune_wheel.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Снежинки -->
+    <div class="snowflakes"></div>
+    
+    <!-- Новогодние украшения -->
+    <div class="decoration decoration-1"></div>
+    <div class="decoration decoration-2"></div>
+    
+    <!-- Кнопка возврата на главную -->
+    <div class="back-to-main">
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i> К выбору конкурса
+        </a>
+    </div>
+    
+    <!-- Основной контейнер -->
+    <div class="container">
+        <!-- Заголовок -->
+        <header class="header">
+            <h1>
+                <i class="fas fa-dharmachakra"></i>
+                <span class="horse-icon">🐎</span>
+                Колесо Фортуны
+                <span class="horse-icon">🐎</span>
+                <i class="fas fa-dharmachakra"></i>
+            </h1>
+            <p id="subtitle">Испытайте удачу в новогодней лотерее! Крутите колесо и забирайте призы!</p>
+            <div class="game-instruction">
+                <p><i class="fas fa-info-circle"></i> Нажмите "Крутить колесо" и получите свой новогодний приз!</p>
+            </div>
+        </header>
+        
+        <!-- Основное колесо -->
+        <section class="wheel-section">
+            <div class="wheel-container">
+                <div class="wheel-wrapper">
+                    <canvas id="wheelCanvas" width="800" height="800"></canvas>
+                    <div class="wheel-center">
+                        <div class="wheel-logo">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                    </div>
+                    <div class="wheel-pointer">
+                        <i class="fas fa-caret-down"></i>
+                    </div>
+                </div>
+                
+                <div class="wheel-controls">
+                    <button class="btn-spin" id="spinButton">
+                        <i class="fas fa-redo"></i>
+                        <span>Крутить колесо!</span>
+                    </button>
+                    <div class="spin-counter">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Круток осталось: <span id="spinCount">3</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="wheel-info">
+                <div class="info-card">
+                    <h3><i class="fas fa-star"></i> Как играть?</h3>
+                    <ol>
+                        <li>Нажмите кнопку "Крутить колесо"</li>
+                        <li>Дождитесь остановки колеса</li>
+                        <li>Получите свой приз в модальном окне</li>
+                        <li>Заберите приз у организаторов</li>
+                    </ol>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-trophy"></i> Ваши призы</h3>
+                    <div class="prizes-list" id="userPrizes">
+                        <p>У вас пока нет призов. Покрутите колесо!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Список призов -->
+        <section class="prizes-section">
+            <h2><i class="fas fa-gifts"></i> Доступные призы</h2>
+            <div class="prizes-grid" id="prizesGrid">
+                <!-- Призы будут загружены через JavaScript -->
+                <div class="loading">Загрузка призов...</div>
+            </div>
+            <div class="prizes-total">
+                <p>Всего призов: <span id="totalPrizes">0</span></p>
+            </div>
+        </section>
+        
+        <!-- Статистика -->
+        <section class="stats-section">
+            <h2><i class="fas fa-chart-line"></i> Статистика лотереи</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-redo"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Всего круток</h3>
+                        <p class="stat-value" id="totalSpins">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Победителей</h3>
+                        <p class="stat-value" id="totalWinners">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Призов осталось</h3>
+                        <p class="stat-value" id="remainingPrizes">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Последний выигрыш</h3>
+                        <p class="stat-value" id="lastWin">Нет данных</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Администрирование (скрыто по умолчанию) -->
+        <section class="admin-section hidden">
+            <h2><i class="fas fa-cogs"></i> Управление лотереей</h2>
+            <div class="admin-controls">
+                <div class="admin-card">
+                    <h3>Сброс лотереи</h3>
+                    <p>Восстановить все призы и статистику</p>
+                    <div class="password-input">
+                        <input type="password" id="adminPassword" placeholder="Пароль администратора">
+                        <button class="btn-admin" id="resetLottery">
+                            <i class="fas fa-redo"></i> Сбросить
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="admin-card">
+                    <h3>Добавить призы</h3>
+                    <p>Добавить новые призы в лотерею</p>
+                    <div class="add-prize-form">
+                        <input type="text" id="newPrizeName" placeholder="Название приза">
+                        <input type="number" id="newPrizeCount" placeholder="Количество" min="1" value="1">
+                        <button class="btn-admin" id="addPrize">
+                            <i class="fas fa-plus"></i> Добавить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Кнопка показа админки -->
+        <div class="admin-toggle">
+            <button class="btn-admin-toggle" id="toggleAdmin">
+                <i class="fas fa-cog"></i> Администрирование
+            </button>
+        </div>
+        
+        <!-- Футер -->
+        <footer class="footer">
+            <p>© 2023 Колесо Фортуны - Новогодние конкурсы. Удачи в игре!</p>
+            <p>Призы распределяются случайным образом. У каждого есть шанс на выигрыш!</p>
+        </footer>
+    </div>
+    
+    <!-- Модальное окно с призом -->
+    <div class="modal-overlay" id="prizeModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2><i class="fas fa-trophy"></i> Поздравляем!</h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="prize-animation">
+                    <div class="confetti"></div>
+                    <div class="prize-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                </div>
+                <h3>Ваш выигрыш:</h3>
+                <div class="prize-result" id="prizeResult">
+                    <p>Загрузка...</p>
+                </div>
+                <div class="prize-instructions">
+                    <p><i class="fas fa-info-circle"></i> Подойдите к организаторам для получения приза.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal" id="sharePrize">
+                    <i class="fas fa-share-alt"></i> Поделиться
+                </button>
+                <button class="btn-modal" id="closeModalBtn">
+                    <i class="fas fa-check"></i> Отлично!
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно без круток -->
+    <div class="modal-overlay" id="noSpinsModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2><i class="fas fa-clock"></i> Упс!</h2>
+                <button class="modal-close" id="closeNoSpinsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="no-spins-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <h3>Крутки закончились!</h3>
+                <p>Вы использовали все доступные крутки. Приходите завтра!</p>
+                <div class="spin-info">
+                    <p><i class="fas fa-sync-alt"></i> Крутки обновляются каждый день</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal" id="closeNoSpinsBtn">
+                    <i class="fas fa-check"></i> Понятно
+                </button>
+            </div>
+        </div>
+    </div>
+    <audio id="spinSound" preload="auto">
+    <source src="/api/uploads/volcok.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="winSound" preload="auto">
+    <source src="/api/uploads/win_sound.mp3" type="audio/mpeg">
+</audio>
+
+    <script src="{{ url_for('static', filename='js/fortune_wheel.js') }}"></script>
+</body>
+</html>

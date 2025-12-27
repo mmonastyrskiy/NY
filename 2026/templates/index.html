@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новогодние конкурсы - Год Лошади</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Снежинки -->
+    <div class="snowflakes"></div>
+    
+    <!-- Новогодние украшения -->
+    <div class="decoration decoration-1"></div>
+    <div class="decoration decoration-2"></div>
+    
+    <!-- Основной контейнер -->
+    <div class="container main-container">
+        <!-- Заголовок -->
+        <header class="header">
+            <h1>
+                <i class="fas fa-star"></i>
+                <span class="horse-icon">🐎</span>
+                Новогодние конкурсы
+                <span class="horse-icon">🐎</span>
+                <i class="fas fa-star"></i>
+            </h1>
+            <p id="subtitle">Выберите конкурс для участия в новогоднем празднике! В год Лошади вас ждёт удача!</p>
+            <div class="year-counter">
+                <div class="year">2026</div>
+                <div class="horse-symbol">🐎</div>
+                <div class="year-text">Год Лошади</div>
+            </div>
+        </header>
+        
+        <!-- Описание конкурсов -->
+        <section class="contest-info">
+            <div class="info-card">
+                <i class="fas fa-music"></i>
+                <h3>Новогодние конкурсы</h3>
+                <p>Участвуйте в весёлых конкурсах, угадывайте мелодии и персонажей, получайте призы и создавайте праздничное настроение!</p>
+            </div>
+        </section>
+        
+        <!-- Выбор конкурса -->
+        <section class="contest-selection">
+            <h2><i class="fas fa-gamepad"></i> Выберите конкурс</h2>
+            <p class="section-subtitle">Нажмите на карточку конкурса, чтобы начать игру</p>
+            
+            <div class="contest-cards">
+                <!-- Конкурс 1: Угадай мелодию -->
+                <a href="/music-game" class="contest-card music-card">
+                    <div class="card-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Голопом по хитам</h3>
+                        <p>Проверьте свой музыкальный слух! Угадывайте новогодние и популярные песни по коротким отрывкам.</p>
+                        <div class="card-features">
+                            <span><i class="fas fa-headphones"></i> Аудио-викторина</span>
+                            <span><i class="fas fa-sliders-h"></i> 4 уровня сложности</span>
+                            <span><i class="fas fa-trophy"></i> Призы за угаданные песни</span>
+                        </div>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <i class="fas fa-file-audio"></i>
+                                <span id="audio-count">Загрузка...</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-clock"></i>
+                                <span>2-8 сек</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <span class="action-text">Играть сейчас</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+                
+                <!-- Конкурс 2: Отгадай персонажа -->
+                <a href="/character-game" class="contest-card character-card">
+                    <div class="card-icon">
+                        <i class="horse-symbol">🐎</i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Отгадай Лошадь</h3>
+                        <p>Проверьте свою эрудицию! Угадывайте персонажей из фильмов, мультфильмов и книг по иллюстрациям.</p>
+                        <div class="card-features">
+                            <span><i class="fas fa-image"></i> Визуальная викторина</span>
+                            <span><i class="fas fa-puzzle-piece"></i> Разные категории</span>
+                            <span><i class="fas fa-medal"></i> Баллы за правильные ответы</span>
+                        </div>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <i class="fas fa-images"></i>
+                                <span id="image-count">Загрузка...</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-eye"></i>
+                                <span>Скрытые детали</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <span class="action-text">Играть сейчас</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+                
+                <!-- Конкурс 3: Будущий конкурс -->
+                <!-- Конкурс 3: Колесо Фортуны -->
+<a href="/fortune-wheel" class="contest-card fortune-card">
+    <div class="card-icon">
+        <i class="fas fa-dharmachakra"></i>
+    </div>
+    <div class="card-content">
+        <h3>Колесо Фортуны</h3>
+        <p>Испытайте удачу в новогодней лотерее! Крутите колесо и получайте призы каждый день!</p>
+        <div class="card-features">
+            <span><i class="fas fa-gift"></i> Ежедневные призы</span>
+            <span><i class="fas fa-redo"></i> 3 крутки в день</span>
+            <span><i class="fas fa-trophy"></i> Гарантированный выигрыш</span>
+        </div>
+        <div class="card-stats">
+            <div class="stat">
+                <i class="fas fa-gifts"></i>
+                <span id="lottery-count">Загрузка...</span>
+            </div>
+            <div class="stat">
+                <i class="fas fa-star"></i>
+                <span>Новинка!</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-action">
+        <span class="action-text">Испытать удачу</span>
+        <i class="fas fa-arrow-right"></i>
+    </div>
+</a>
+        
+        <!-- Инструкция -->
+        <section class="instructions">
+            <h2><i class="fas fa-info-circle"></i> Как участвовать?</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Выберите конкурс</h3>
+                        <p>Нажмите на карточку с понравившимся конкурсом</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Играйте и угадывайте</h3>
+                        <p>Используйте подсказки и свою эрудицию</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Получайте призы</h3>
+                        <p>Набирайте баллы и получайте новогодние призы</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Футер -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-horse-head"></i> Год Лошади</h4>
+                    <p>Символ года приносит удачу и успех в ваши начинания!</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-gamepad"></i> Конкурсы</h4>
+                    <ul>
+                        <li><a href="/music-game">Угадай мелодию</a></li>
+                        <li><a href="/character-game">Отгадай персонажа</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-info"></i> Техническая информация</h4>
+                    <p>Для добавления своих файлов поместите их в папки <code>audio/</code> или <code>images/</code></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Новогодние конкурсы - Год Лошади. Счастливого Нового года!</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Загрузка статистики файлов при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFileCounts();
+        });
+        
+        async function updateFileCounts() {
+            try {
+                // Получаем количество аудиофайлов
+                const audioResponse = await fetch('/api/songs');
+                if (audioResponse.ok) {
+                    const audioData = await audioResponse.json();
+                    document.getElementById('audio-count').textContent = `${audioData.length} песен`;
+                }
+                
+                // Получаем количество изображений
+                const imagesResponse = await fetch('/api/images');
+                if (imagesResponse.ok) {
+                    const imagesData = await imagesResponse.json();
+                    document.getElementById('image-count').textContent = `${imagesData.length} изображений`;
+                }
+                 // Получаем статистику лотереи
+        await updateLotteryStats();
+            } catch (error) {
+                console.log('Не удалось загрузить статистику файлов:', error);
+            }
+        }
+    </script>
+</body>
+</html>
