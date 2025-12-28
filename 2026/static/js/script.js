@@ -154,7 +154,7 @@ async function rescanSongs() {
         rescanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         rescanBtn.disabled = true;
         
-        const response = await fetch('/api/rescan');
+        const response = await fetch('/api/rescan/audio');
         if (!response.ok) {
             throw new Error(`Ошибка HTTP: ${response.status}`);
         }
@@ -604,6 +604,6 @@ async function updateLotteryStats() {
             document.getElementById('lottery-count').textContent = `${data.total} призов`;
         }
     } catch (error) {
-        console.log('Не удалось загрузить статистику лотереи:', error);
+        ('Не удалось загрузить статистику лотереи:', error);
     }
 }

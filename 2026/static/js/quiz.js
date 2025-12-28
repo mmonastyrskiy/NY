@@ -165,6 +165,9 @@ class QuizGame {
     addPointsToTeam(team, points = 10) {
         this.scores[team] += points;
         this.updateScores();
+        this.currentTeam = team === 'red' ? 'blue' : 'red';
+        this.updateTeamIndicators();
+        
         
         // Переключаем команду, если отмечено в чекбоксе
         const switchTurn = document.getElementById('switchTurnCheckbox').checked;

@@ -591,6 +591,7 @@ function loadCurrentCharacter() {
         
         currentImage.src = imageUrl;
         currentImage.alt = character.title;
+        currentImage.style.display = 'block';
         
         // Обновляем статус изображения
         if (statusPreviewElement && statusOriginalElement) {

@@ -198,7 +198,6 @@ function getDisplayNameForWheel(realPrize, index) {
     if (DISPLAY_NAMES[realPrize]) {
         return DISPLAY_NAMES[realPrize];
     }
-    console.log("Используем выдуманный приз");
     // Используем индекс для равномерного распределения
     const displayIndex = index % FUNNY_DISPLAY_NAMES.length;
     return FUNNY_DISPLAY_NAMES[displayIndex];
@@ -531,7 +530,6 @@ async function spinWheel() {
         
         if (result.success) {
             // Анимация вращения
-            console.log('Вращаем на: ',result.target_angle);
             await animateWheel(result.target_angle);
 
             playWinSound();
@@ -591,69 +589,27 @@ let isAudioEnabled = true;
 
 // Инициализация аудио
     function initializeAudio() {
-    console.log('Инициализация аудио...');
     
     spinSound = document.getElementById('spinSound');
     winSound = document.getElementById('winSound');
     
-    console.log('Найден spinSound:', !!spinSound);
-    console.log('Найден winSound:', !!winSound);
-    
     if (!spinSound || !winSound) {
         console.error('❌ Аудио элементы не найдены!');
-        console.log('Ищем все audio элементы:', document.querySelectorAll('audio'));
-        console.log('Текущий HTML:', document.body.innerHTML.substring(0, 1000));
         isAudioEnabled = false;
         return;
     }
     
-    console.log('spinSound src:', spinSound.src);
-    console.log('winSound src:', winSound.src);
     
     // Настройка громкости
     spinSound.volume = 0.7;
     winSound.volume = 0.8;
-    
-    // Добавляем обработчики событий для отладки
-    spinSound.addEventListener('loadeddata', () => {
-        console.log('✅ spinSound загружен, readyState:', spinSound.readyState);
-    });
-    
-    winSound.addEventListener('loadeddata', () => {
-        console.log('✅ winSound загружен, readyState:', winSound.readyState);
-    });
-    
-    spinSound.addEventListener('error', (e) => {
-        console.error('❌ Ошибка spinSound:', e);
-        console.log('spinSound error details:', spinSound.error);
-    });
-    
-    winSound.addEventListener('error', (e) => {
-        console.error('❌ Ошибка winSound:', e);
-        console.log('winSound error details:', winSound.error);
-    });
-    
-    spinSound.addEventListener('canplay', () => {
-        console.log('🎵 spinSound готов к воспроизведению');
-    });
-    
-    winSound.addEventListener('canplay', () => {
-        console.log('🎵 winSound готов к воспроизведению');
-    });
+
     
     // Предзагрузка
     spinSound.load();
     winSound.load();
     
-    // Проверка через 2 секунды
-    setTimeout(() => {
-        console.log('Статус через 2 секунды:');
-        console.log('- spinSound.readyState:', spinSound.readyState);
-        console.log('- winSound.readyState:', winSound.readyState);
-        console.log('- spinSound.networkState:', spinSound.networkState);
-        console.log('- winSound.networkState:', winSound.networkState);
-    }, 2000);
-    
+
     // Сохранение настроек звука
     const savedAudioSetting = localStorage.getItem('fortuneWheelAudioEnabled');
     if (savedAudioSetting !== null) {
@@ -663,7 +619,6 @@ let isAudioEnabled = true;
         localStorage.setItem('fortuneWheelAudioEnabled', 'true');
     }
     
-    console.log('Звук включен:', isAudioEnabled);
     
     // Создаем кнопку управления звуком
     createAudioControl();

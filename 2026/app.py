@@ -19,7 +19,7 @@ IMAGES_FOLDER = 'images'
 ORIGINAL_FOLDER = os.path.join(IMAGES_FOLDER, 'original')
 PREVIEW_FOLDER = os.path.join(IMAGES_FOLDER, 'preview')
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'mp3', 'jpg', 'jpeg', 'png', 'gif', 'webp',"jfif"}
+ALLOWED_EXTENSIONS = {'mp3', 'jpg', 'jpeg', 'png', 'gif', 'webp',"jfif","avif"}
 LOTTERY_FILE = os.path.join(UPLOAD_FOLDER, 'lottery.json')
 QUIZ_FILE = os.path.join(UPLOAD_FOLDER, 'quiz.json')
 
@@ -564,7 +564,7 @@ def find_image_file(folder, filename):
     name_without_ext = os.path.splitext(filename)[0]
     
     # Ищем все изображения в папке
-    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp',".jfif"]
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp',".jfif",".avif"]
     
     for ext in image_extensions:
         test_path = os.path.join(folder, name_without_ext + ext)
@@ -727,7 +727,7 @@ def scan_images_folder():
     images = []
     
     # Ищем все файлы в папке original
-    image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.webp',"*.jfif"]
+    image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.gif', '*.webp',"*.jfif","*.avif"]
     original_files = []
     
     for ext in image_extensions:
@@ -1039,7 +1039,7 @@ def rescan_folder(folder_type):
         songs = scan_audio_folder()
         return jsonify({
             'message': f'Найдено {len(songs)} песен',
-            'items': songs,
+            'songs': songs,
             'type': 'audio'
         })
     elif folder_type == 'images':
