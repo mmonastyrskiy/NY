@@ -789,7 +789,13 @@ function stopAllSounds() {
 // Анимация вращения колеса
 function animateWheel(targetAngle) {
     return new Promise((resolve) => {
-        const startAngle = wheelAngle;
+        // Нормализуем углы: приводим wheelAngle в диапазон 0-360
+        const startAngle = wheelAngle % 360;
+        
+        // Вычисляем общее вращение: полные обороты + целевой угол
+        const fullRotations = 5 * 360; // 5 полных оборотов для эффекта
+        const totalRotation = fullRotations + targetAngle;
+        
         const spinDuration = 5000; // 5 секунд
         const startTime = Date.now();
         
@@ -800,13 +806,16 @@ function animateWheel(targetAngle) {
             
             // Используем easing функцию для плавного замедления
             const easeOut = 1 - Math.pow(1 - progress, 3);
-            wheelAngle = startAngle + (targetAngle - startAngle) * easeOut;
+            wheelAngle = startAngle + totalRotation * easeOut;
             
             drawWheel();
             
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
+                // После завершения анимации устанавливаем конечный угол
+                wheelAngle = (startAngle + totalRotation) % 360;
+                drawWheel();
                 resolve();
             }
         }
@@ -814,7 +823,6 @@ function animateWheel(targetAngle) {
         animate();
     });
 }
-
 // Показ выигранного приза
 function showPrize(realPrize) {
     if (!prizeResultElement || !prizeModal) return;
