@@ -21,6 +21,7 @@ PREVIEW_FOLDER = os.path.join(IMAGES_FOLDER, 'preview')
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'mp3', 'jpg', 'jpeg', 'png', 'gif', 'webp',"jfif"}
 LOTTERY_FILE = os.path.join(UPLOAD_FOLDER, 'lottery.json')
+QUIZ_FILE = os.path.join(UPLOAD_FOLDER, 'quiz.json')
 
 # Создаем папки если их нет
 for folder in [AUDIO_FOLDER, IMAGES_FOLDER, UPLOAD_FOLDER]:
@@ -89,6 +90,159 @@ def create_demo_sounds():
 def fortune_wheel():
     """Страница игры 'Колесо фортуны'"""
     return render_template('fortune_wheel.html')
+
+
+
+@app.route('/quiz')
+def quiz():
+    """Страница игры 'Викторина'"""
+    return render_template('quiz.html')
+
+
+@app.route("/api/quiz/questions")
+def quiz_questions():
+    """API для получения всех вопросов (без ответов)"""
+    try:
+        if os.path.exists(QUIZ_FILE):
+            with open(QUIZ_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # Возвращаем только id и вопрос, без ответа
+            questions_list = []
+            for item in data:
+                questions_list.append({
+                    'id': item.get('id'),
+                    'question': item.get('question'),
+                    'answer':item.get('answer'),
+                    'category':item.get('category'),
+                    'difficulty':item.get('difficulty')
+                })
+                random.shuffle(questions_list)
+            
+            return jsonify({
+                'success': True,
+                'questions': questions_list,
+                'total': len(questions_list)
+            })
+        else:
+            return jsonify({
+                'success': True,
+                'questions': [],
+                'total': 0,
+                'message': 'Файл с вопросами не найден'
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Ошибка загрузки вопросов: {str(e)}',
+            'questions': []
+        }), 500
+    
+
+
+
+@app.route("/api/quiz/stats")
+def quiz_stats():
+    """API для получения статистики викторины"""
+    try:
+        quiz_file = os.path.join(UPLOAD_FOLDER, 'quiz.json')
+        
+        if os.path.exists(quiz_file):
+            with open(quiz_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # Подсчитываем вопросы по категориям и сложности
+            categories = {}
+            difficulties = {}
+            total_questions = 0
+            
+            def process_questions(items):
+                nonlocal total_questions
+                for item in items:
+                    if isinstance(item, dict):
+                        total_questions += 1
+                        category = item.get('category', 'Без категории')
+                        difficulty = item.get('difficulty', 'Не указана')
+                        
+                        categories[category] = categories.get(category, 0) + 1
+                        difficulties[difficulty] = difficulties.get(difficulty, 0) + 1
+            
+            if isinstance(data, list):
+                process_questions(data)
+            elif isinstance(data, dict) and 'questions' in data:
+                process_questions(data['questions'])
+            
+            return jsonify({
+                'success': True,
+                'totalQuestions': total_questions,
+                'categories': categories,
+                'difficulties': difficulties
+            })
+        else:
+            return jsonify({
+                'success': True,
+                'totalQuestions': 0,
+                'categories': {},
+                'difficulties': {}
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Ошибка получения статистики: {str(e)}'
+        }), 500
+
+
+@app.route("/api/quiz/check-answer", methods=['POST'])
+def check_answer():
+    """API для проверки ответа на вопрос"""
+    try:
+        data = request.json
+        question_id = data.get('id')
+        user_answer = data.get('answer')
+        
+        if not question_id or user_answer is None:
+            return jsonify({
+                'success': False,
+                'error': 'Необходимо указать id вопроса и answer'
+            }), 400
+        
+        if os.path.exists(QUIZ_FILE):
+            with open(QUIZ_FILE, 'r', encoding='utf-8') as f:
+                quiz_data = json.load(f)
+            
+            # Находим вопрос по ID
+            correct_answer = None
+            for item in quiz_data:
+                if item.get('id') == question_id:
+                    correct_answer = item.get('answer')
+                    break
+            
+            if correct_answer is None:
+                return jsonify({
+                    'success': False,
+                    'error': f'Вопрос с ID {question_id} не найден'
+                }), 404
+            
+            # Проверяем ответ (без учета регистра и пробелов)
+            is_correct = str(user_answer).strip().lower() == str(correct_answer).strip().lower()
+            
+            return jsonify({
+                'success': True,
+                'is_correct': is_correct,
+                'correct_answer': correct_answer
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Файл с вопросами не найден'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Ошибка проверки ответа: {str(e)}'
+        }), 500
+
+
 
 @app.route('/api/lottery/prizes')
 def get_lottery_prizes():

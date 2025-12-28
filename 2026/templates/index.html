@@ -109,36 +109,63 @@
                     </div>
                 </a>
                 
-                <!-- Конкурс 3: Будущий конкурс -->
                 <!-- Конкурс 3: Колесо Фортуны -->
-<a href="/fortune-wheel" class="contest-card fortune-card">
-    <div class="card-icon">
-        <i class="fas fa-dharmachakra"></i>
-    </div>
-    <div class="card-content">
-        <h3>Колесо Фортуны</h3>
-        <p>Испытайте удачу в новогодней лотерее! Крутите колесо и получайте призы каждый день!</p>
-        <div class="card-features">
-            <span><i class="fas fa-gift"></i> Ежедневные призы</span>
-            <span><i class="fas fa-redo"></i> 3 крутки в день</span>
-            <span><i class="fas fa-trophy"></i> Гарантированный выигрыш</span>
-        </div>
-        <div class="card-stats">
-            <div class="stat">
-                <i class="fas fa-gifts"></i>
-                <span id="lottery-count">Загрузка...</span>
+                <a href="/fortune-wheel" class="contest-card fortune-card">
+                    <div class="card-icon">
+                        <i class="fas fa-dharmachakra"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Колесо Фортуны</h3>
+                        <p>Испытайте удачу в новогодней лотерее! Крутите колесо и получайте призы каждый день!</p>
+                        <div class="card-features">
+                            <span><i class="fas fa-gift"></i> Ежедневные призы</span>
+                            <span><i class="fas fa-redo"></i> 3 крутки в день</span>
+                            <span><i class="fas fa-trophy"></i> Гарантированный выигрыш</span>
+                        </div>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <i class="fas fa-gifts"></i>
+                                <span id="lottery-count">Загрузка...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <span class="action-text">Испытать удачу</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+
+                <!-- Конкурс 4: Викторина -->
+                <a href="/quiz" class="contest-card quiz-card">
+                    <div class="card-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Викторина "Скачки"</h3>
+                        <p>Продемонстрируйте свою эрудицию в нашей новогодней викторине! Ответьте на вопросы о традициях и символах.</p>
+                        <div class="card-features">
+                            <span><i class="fas fa-lightbulb"></i> Разные темы</span>
+                            <span><i class="fas fa-star"></i> Баллы за ответы</span>
+                            <span><i class="fas fa-award"></i> Специальные награды</span>
+                        </div>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <i class="fas fa-question"></i>
+                                <span id="quiz-count">Загрузка...</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-fire"></i>
+                                <span>Новинка!</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <span class="action-text">Показать эрудицию</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
             </div>
-            <div class="stat">
-                <i class="fas fa-star"></i>
-                <span>Новинка!</span>
-            </div>
-        </div>
-    </div>
-    <div class="card-action">
-        <span class="action-text">Испытать удачу</span>
-        <i class="fas fa-arrow-right"></i>
-    </div>
-</a>
+        </section>
         
         <!-- Инструкция -->
         <section class="instructions">
@@ -178,8 +205,10 @@
                 <div class="footer-section">
                     <h4><i class="fas fa-gamepad"></i> Конкурсы</h4>
                     <ul>
-                        <li><a href="/music-game">Угадай мелодию</a></li>
-                        <li><a href="/character-game">Отгадай персонажа</a></li>
+                        <li><a href="/music-game">Голопом по хитам</a></li>
+                        <li><a href="/character-game">Отгадай Лошадь</a></li>
+                        <li><a href="/fortune-wheel">Колесо Фортуны</a></li>
+                        <li><a href="/quiz">Скачки</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -215,10 +244,41 @@
                     const imagesData = await imagesResponse.json();
                     document.getElementById('image-count').textContent = `${imagesData.length} изображений`;
                 }
-                 // Получаем статистику лотереи
-        await updateLotteryStats();
+                
+                // Получаем статистику лотереи
+                await updateLotteryStats();
+                
+                // Получаем статистику викторины
+                await updateQuizStats();
+                
             } catch (error) {
                 console.log('Не удалось загрузить статистику файлов:', error);
+            }
+        }
+        
+        async function updateLotteryStats() {
+            try {
+                const response = await fetch('/api/lottery/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('lottery-count').textContent = `${data.total_remaining} призов`;
+                }
+            } catch (error) {
+                console.log('Ошибка загрузки статистики лотереи:', error);
+                document.getElementById('lottery-count').textContent = 'Призы доступны';
+            }
+        }
+        
+        async function updateQuizStats() {
+            try {
+                const response = await fetch('/api/quiz/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('quiz-count').textContent = `${data.totalQuestions} вопросов`;
+                }
+            } catch (error) {
+                console.log('Ошибка загрузки статистики викторины:', error);
+                document.getElementById('quiz-count').textContent = 'Вопросы загружены';
             }
         }
     </script>

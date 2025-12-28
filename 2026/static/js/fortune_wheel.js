@@ -531,6 +531,7 @@ async function spinWheel() {
         
         if (result.success) {
             // Анимация вращения
+            console.log('Вращаем на: ',result.target_angle);
             await animateWheel(result.target_angle);
 
             playWinSound();

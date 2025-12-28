@@ -463,6 +463,23 @@ body {
     background: linear-gradient(to right, #ff5555, #dd2222);
 }
 
+
+
+
+.quiz-card .card-icon {
+    border-bottom-color: #33ff81;
+}
+
+.quiz-card .card-action {
+    background: linear-gradient(to right, #33ff81, #33cc81);
+    border-top-color: #33ff81;
+}
+
+.quiz-card:hover .card-action {
+    background: linear-gradient(to right, #55ffaa, #55ccaa);
+}
+
+
 /* Новогодние украшения */
 .decoration {
     position: absolute;
