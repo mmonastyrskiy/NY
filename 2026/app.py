@@ -22,6 +22,9 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'mp3', 'jpg', 'jpeg', 'png', 'gif', 'webp',"jfif","avif"}
 LOTTERY_FILE = os.path.join(UPLOAD_FOLDER, 'lottery.json')
 QUIZ_FILE = os.path.join(UPLOAD_FOLDER, 'quiz.json')
+UPLOAD_VIDEO_FOLDER = os.path.join(UPLOAD_FOLDER, 'video')
+KARAOKE_JSON = os.path.join(UPLOAD_FOLDER, 'karaoke.json')
+
 
 # Создаем папки если их нет
 for folder in [AUDIO_FOLDER, IMAGES_FOLDER, UPLOAD_FOLDER]:
@@ -91,7 +94,192 @@ def fortune_wheel():
     """Страница игры 'Колесо фортуны'"""
     return render_template('fortune_wheel.html')
 
+# app.py - добавьте эти маршруты
 
+@app.route("/karaoke")
+def karaoke():
+    """Страница караоке"""
+    return render_template('karaoke.html')
+
+# API для караоке
+
+
+@app.route("/api/karaoke/videos")
+def karaoke_videos():
+    """API для получения списка видео"""
+    try:
+        # Создаем папку для видео если её нет
+        os.makedirs(UPLOAD_VIDEO_FOLDER, exist_ok=True)
+        
+        # Загружаем данные из JSON файла
+        if os.path.exists(KARAOKE_JSON):
+            with open(KARAOKE_JSON, 'r', encoding='utf-8') as f:
+                videos_data = json.load(f)
+        else:
+            # Создаем примерный файл если его нет
+            videos_data = []
+            # Ищем видеофайлы в папке
+            for filename in os.listdir(UPLOAD_VIDEO_FOLDER):
+                if filename.lower().endswith(('.mp4', '.avi', '.mov', '.mkv', '.webm')):
+                    videos_data.append({
+                        "id": len(videos_data) + 1,
+                        "filename": filename,
+                        "title": filename.replace('.mp4', '').replace('_', ' ').title(),
+                        "artist": "Неизвестен",
+                        "genre": "Новогодняя",
+                        "duration": 180,
+                        "views": 0,
+                        "likes": 0,
+                        "added_date": datetime.now().isoformat()
+                    })
+            
+            # Сохраняем примерный файл
+            with open(KARAOKE_JSON, 'w', encoding='utf-8') as f:
+                json.dump(videos_data, f, ensure_ascii=False, indent=2)
+        
+        return jsonify({
+            "success": True,
+            "videos": videos_data,
+            "total": len(videos_data)
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Ошибка загрузки видео: {str(e)}",
+            "videos": []
+        }), 500
+
+@app.route("/api/karaoke/stats")
+def karaoke_stats():
+    """API для получения статистики караоке"""
+    try:
+        if os.path.exists(KARAOKE_JSON):
+            with open(KARAOKE_JSON, 'r', encoding='utf-8') as f:
+                videos_data = json.load(f)
+            
+            total_plays = sum(video.get("views", 0) for video in videos_data)
+            total_likes = sum(video.get("likes", 0) for video in videos_data)
+            total_duration = sum(video.get("duration", 0) for video in videos_data)
+            
+            return jsonify({
+                "success": True,
+                "stats": {
+                    "total_plays": total_plays,
+                    "total_likes": total_likes,
+                    "total_duration": total_duration,
+                    "total_videos": len(videos_data)
+                }
+            })
+        else:
+            return jsonify({
+                "success": True,
+                "stats": {
+                    "total_plays": 0,
+                    "total_likes": 0,
+                    "total_duration": 0,
+                    "total_videos": 0
+                }
+            })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Ошибка получения статистики: {str(e)}"
+        }), 500
+
+@app.route("/api/karaoke/view", methods=["POST"])
+def karaoke_view():
+    """API для увеличения счетчика просмотров"""
+    try:
+        data = request.json
+        video_id = data.get("video_id")
+        
+        if not video_id:
+            return jsonify({"success": False, "error": "Не указан ID видео"}), 400
+        
+        if os.path.exists(KARAOKE_JSON):
+            with open(KARAOKE_JSON, 'r', encoding='utf-8') as f:
+                videos_data = json.load(f)
+            
+            # Находим видео и увеличиваем счетчик просмотров
+            for video in videos_data:
+                if video.get("id") == video_id:
+                    video["views"] = video.get("views", 0) + 1
+                    break
+            
+            # Сохраняем обновленные данные
+            with open(KARAOKE_JSON, 'w', encoding='utf-8') as f:
+                json.dump(videos_data, f, ensure_ascii=False, indent=2)
+            
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "error": "Файл данных не найден"}), 404
+            
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Ошибка обновления просмотров: {str(e)}"
+        }), 500
+
+@app.route("/api/karaoke/like", methods=["POST"])
+def karaoke_like():
+    """API для добавления лайка видео"""
+    try:
+        data = request.json
+        video_id = data.get("video_id")
+        
+        if not video_id:
+            return jsonify({"success": False, "error": "Не указан ID видео"}), 400
+        
+        if os.path.exists(KARAOKE_JSON):
+            with open(KARAOKE_JSON, 'r', encoding='utf-8') as f:
+                videos_data = json.load(f)
+            
+            # Находим видео и увеличиваем счетчик лайков
+            for video in videos_data:
+                if video.get("id") == video_id:
+                    video["likes"] = video.get("likes", 0) + 1
+                    current_likes = video["likes"]
+                    break
+            
+            # Сохраняем обновленные данные
+            with open(KARAOKE_JSON, 'w', encoding='utf-8') as f:
+                json.dump(videos_data, f, ensure_ascii=False, indent=2)
+            
+            return jsonify({"success": True, "likes": current_likes})
+        else:
+            return jsonify({"success": False, "error": "Файл данных не найден"}), 404
+            
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Ошибка добавления лайка: {str(e)}"
+        }), 500
+
+@app.route("/uploads/video/<filename>")
+def serve_video(filename):
+    """Отдача видеофайлов"""
+    try:
+        video_path = os.path.join(UPLOAD_VIDEO_FOLDER, filename)
+        
+        if os.path.exists(video_path):
+            # Определяем MIME тип
+            mime_type = 'video/mp4'
+            if filename.endswith('.avi'):
+                mime_type = 'video/x-msvideo'
+            elif filename.endswith('.mov'):
+                mime_type = 'video/quicktime'
+            elif filename.endswith('.webm'):
+                mime_type = 'video/webm'
+            elif filename.endswith('.mkv'):
+                mime_type = 'video/x-matroska'
+            
+            return send_file(video_path, mimetype=mime_type)
+        else:
+            return jsonify({"error": "Видео не найдено"}), 404
+            
+    except Exception as e:
+        return jsonify({"error": f"Ошибка загрузки видео: {str(e)}"}), 500
 
 @app.route('/quiz')
 def quiz():

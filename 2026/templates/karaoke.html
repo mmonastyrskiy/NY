@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новогоднее Караоке - Год Лошади</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/karaoke.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Снежинки -->
+    <div class="snowflakes"></div>
+    
+    <!-- Новогодние украшения -->
+    <div class="decoration decoration-1"></div>
+    <div class="decoration decoration-2"></div>
+    
+    <!-- Кнопка возврата на главную -->
+    <div class="back-to-main">
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i> К выбору конкурса
+        </a>
+    </div>
+    
+    <!-- Основной контейнер -->
+    <div class="container">
+        <!-- Заголовок -->
+        <header class="header">
+            <h1>
+                <i class="fas fa-microphone-alt"></i>
+                <span class="horse-icon">🐎</span>
+                Новогоднее Караоке
+                <span class="horse-icon">🐎</span>
+                <i class="fas fa-microphone-alt"></i>
+            </h1>
+            <p id="subtitle">Спойте любимые новогодние песни вместе с нами! Выбирайте трек и становитесь звездой праздника!</p>
+        </header>
+        
+        <!-- Поиск и фильтры -->
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Поиск по названию песни или исполнителю...">
+                    <button class="btn btn-search" id="searchButton">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+                
+                <div class="filter-controls">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-music"></i> Все песни
+                    </button>
+                    <button class="filter-btn" data-filter="newyear">
+                        <i class="fas fa-tree"></i> Новогодние
+                    </button>
+                    <button class="filter-btn" data-filter="popular">
+                        <i class="fas fa-fire"></i> Популярные
+                    </button>
+                    <button class="filter-btn" data-filter="slow">
+                        <i class="fas fa-heart"></i> Лирические
+                    </button>
+                    <button class="filter-btn" data-filter="fast">
+                        <i class="fas fa-bolt"></i> Танцевальные
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Статистика -->
+        <section class="stats-section">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="totalSongs">0</span>
+                        <span class="stat-label">Всего песен</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="totalPlays">0</span>
+                        <span class="stat-label">Всего прослушиваний</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="topSong">-</span>
+                        <span class="stat-label">Самая популярная</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="totalDuration">0</span>
+                        <span class="stat-label">Общая длительность</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Список видео -->
+        <section class="videos-section">
+            <div class="section-header">
+                <h2><i class="fas fa-list-music"></i> Доступные песни</h2>
+                <div class="sort-controls">
+                    <select id="sortSelect" class="sort-select">
+                        <option value="title">По названию (А-Я)</option>
+                        <option value="title_desc">По названию (Я-А)</option>
+                        <option value="popular">По популярности</option>
+                        <option value="newest">Сначала новые</option>
+                        <option value="duration">По длительности</option>
+                    </select>
+                    <button class="btn btn-small" id="refreshVideos">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+            </div>
+            
+            <div class="videos-grid" id="videosGrid">
+                <div class="loading-videos">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Загрузка списка песен...</p>
+                </div>
+            </div>
+            
+            <div class="empty-videos hidden" id="emptyVideos">
+                <i class="fas fa-music-slash"></i>
+                <h3>Песни не найдены</h3>
+                <p>Попробуйте изменить параметры поиска или добавьте новые песни</p>
+            </div>
+        </section>
+        
+        <!-- Проигрыватель -->
+        <section class="player-section hidden" id="playerSection">
+            <div class="player-header">
+                <h2><i class="fas fa-play-circle"></i> Сейчас играет</h2>
+                <button class="btn btn-small btn-close-player" id="closePlayerBtn">
+                    <i class="fas fa-times"></i> Закрыть
+                </button>
+            </div>
+            
+            <div class="player-container">
+                <div class="video-player">
+                    <video id="karaokeVideo" controls>
+                        Ваш браузер не поддерживает воспроизведение видео
+                    </video>
+                    <div class="player-overlay" id="playerOverlay">
+                        <button class="btn btn-large play-overlay-btn" id="playOverlayBtn">
+                            <i class="fas fa-play"></i> Воспроизвести
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="player-info">
+                    <h3 id="playerTitle">Название песни</h3>
+                    <div class="player-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-user"></i>
+                            <span>Исполнитель: <strong id="playerArtist">Неизвестен</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Длительность: <strong id="playerDuration">0:00</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-eye"></i>
+                            <span>Просмотров: <strong id="playerViews">0</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Добавлено: <strong id="playerDate">-</strong></span>
+                        </div>
+                    </div>
+                    
+                    <div class="player-controls">
+                        <div class="volume-control">
+                            <i class="fas fa-volume-up"></i>
+                            <input type="range" id="volumeSlider" min="0" max="100" value="100">
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="control-btn" id="prevSongBtn">
+                                <i class="fas fa-step-backward"></i>
+                            </button>
+                            <button class="control-btn play-btn" id="playPauseBtn">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="control-btn" id="nextSongBtn">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                            <button class="control-btn" id="fullscreenBtn">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button class="control-btn" id="loopBtn">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="playback-controls">
+                            <span id="currentTime">0:00</span>
+                            <input type="range" id="progressBar" min="0" max="100" value="0">
+                            <span id="totalTime">0:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="player-actions">
+                        <button class="action-btn" id="likeBtn">
+                            <i class="far fa-heart"></i> Нравится
+                        </button>
+                        <button class="action-btn" id="lyricsBtn">
+                            <i class="fas fa-scroll"></i> Текст песни
+                        </button>
+                        <button class="action-btn" id="shareBtn">
+                            <i class="fas fa-share-alt"></i> Поделиться
+                        </button>
+                        <button class="action-btn" id="addToQueueBtn">
+                            <i class="fas fa-plus"></i> В очередь
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Очередь воспроизведения -->
+        <section class="queue-section">
+            <div class="queue-header">
+                <h3><i class="fas fa-list-ol"></i> Очередь воспроизведения</h3>
+                <div class="queue-controls">
+                    <button class="btn btn-small" id="clearQueueBtn">
+                        <i class="fas fa-trash"></i> Очистить
+                    </button>
+                    <button class="btn btn-small" id="shuffleQueueBtn">
+                        <i class="fas fa-random"></i> Перемешать
+                    </button>
+                </div>
+            </div>
+            
+            <div class="queue-list" id="queueList">
+                <div class="empty-queue">
+                    <i class="fas fa-music"></i>
+                    <p>Очередь пуста. Добавьте песни для воспроизведения!</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Модальное окно с текстом песни -->
+    <div class="modal-overlay hidden" id="lyricsModal">
+        <div class="modal-content lyrics-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-scroll"></i> Текст песни</h3>
+                <button class="modal-close" id="closeLyricsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <h4 id="lyricsTitle">Название песни</h4>
+                <div class="lyrics-content" id="lyricsContent">
+                    <p>Текст песни загружается...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <p>© 2026 Новогоднее Караоке - Год Лошади. Пойте от души!</p>
+        <p>Для добавления своих видео поместите файлы в папку <code>uploads/video/</code> и обновите файл <code>karaoke.json</code></p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/karaoke.js') }}"></script>
+</body>
+</html>
