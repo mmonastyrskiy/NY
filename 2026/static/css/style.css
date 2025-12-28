@@ -459,6 +459,10 @@ body {
     border-top-color: #ff3333;
 }
 
+.fortune-card:hover{
+    border-color: #ff3333;
+}
+
 .fortune-card:hover .card-action {
     background: linear-gradient(to right, #ff5555, #dd2222);
 }
@@ -477,6 +481,10 @@ body {
 
 .quiz-card:hover .card-action {
     background: linear-gradient(to right, #55ffaa, #55ccaa);
+}
+
+.quiz-card:hover{
+    border-color: #33ff81;
 }
 
 

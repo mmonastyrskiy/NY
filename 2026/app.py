@@ -1,7 +1,7 @@
 import urllib.parse
 import os
 import json
-from flask import Flask, render_template, jsonify, send_file, request, send_from_directory
+from flask import Flask, render_template, jsonify, send_file, request
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3
 import glob
