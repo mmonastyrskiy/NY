@@ -1,12 +1,12 @@
 import urllib.parse
 import os
 import json
-from flask import Flask, render_template, jsonify, send_file, request
-from mutagen.mp3 import MP3
-from mutagen.id3 import ID3
+from flask import Flask, render_template, jsonify, send_file, request # pyright: ignore[reportMissingImports]
+from mutagen.mp3 import MP3 # type: ignore
+from mutagen.id3 import ID3 # type: ignore
 import glob
 import time
-from PIL import Image
+from PIL import Image # type: ignore
 import mimetypes
 import random
 from datetime import datetime
@@ -27,7 +27,7 @@ KARAOKE_JSON = os.path.join(UPLOAD_FOLDER, 'karaoke.json')
 
 
 # Создаем папки если их нет
-for folder in [AUDIO_FOLDER, IMAGES_FOLDER, UPLOAD_FOLDER]:
+for folder in [AUDIO_FOLDER, IMAGES_FOLDER, UPLOAD_FOLDER,ORIGINAL_FOLDER,PREVIEW_FOLDER,UPLOAD_VIDEO_FOLDER]:
     os.makedirs(folder, exist_ok=True)
 
 
